@@ -7,19 +7,41 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
-
+```{r , echo=TRUE}
+data <- read.csv("activity.csv")
+data$date <- as.Date(data$date, format = "%Y-%m-%d")
+```
 ## What is mean total number of steps taken per day?
-
-
-
+```{r, echo=TRUE}
+step <- with(data, tapply(steps, date, sum))
+hist(step, breaks = 10)
+print(paste0("Mean : ", as.character(mean(step, na.rm = TRUE))))
+print(paste0("Median : ", as.character(median(step, na.rm = TRUE))))
+```
 ## What is the average daily activity pattern?
-
-
+```{r, echo=TRUE}
+intrvl <- with(data, tapply(steps, interval, mean, na.rm = TRUE))
+plot(names(intrvl),intrvl, type = "l", xlab = "Interval", ylab = "Average Steps Taken")
+print(paste0("The inteval with maximum number of steps is ",names(intrvl)[which.max(intrvl)]))
+```
 
 ## Imputing missing values
 
+**The missing values have been replaced by the mean of 5-min interval.**
 
+```{r, echo=TRUE}
+sum(is.na(data))
+tmp = intrvl[as.character(data$interval[is.na(data)])]
+step_tot <- data$steps
+step_tot[is.na(step_tot)] = tmp
+new_data <- data.frame(steps = step_tot, date = data$date,interval =  data$interval)
+new_step <- with(new_data, tapply(steps, date, sum, na.rm = TRUE))
+hist(new_step, breaks = 10)
+```
+
+Filling of missing values have lead to an increase in the frequency of steps taken every day
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r, echo=TRUE}
+
+```
